@@ -11,12 +11,14 @@ public class SinglePlayerGame {
 
         public ArrayList score;
         public int tours;
+        
 	/**
 	 * Constructeur
 	 */
 	public SinglePlayerGame() {
-            tours = 20;
+            tours = 19;
             score = new ArrayList<Integer>();
+            
 	}
 
 	/**
@@ -30,18 +32,25 @@ public class SinglePlayerGame {
             //ajout de deux boules si stike et dernier tour
             if (nombreDeQuillesAbattues==10) {
                 tours-=1;  
-                if ( tours == 1) {
+                if (tours == 1) {
                     tours+=2;
                 }
             }    
                 
+            this.score.add(nombreDeQuillesAbattues);
             tours -= 1;
-            this.score.add(nombreDeQuillesAbattues);                 
             
 	}
         
-        public void spare() {
+        public int spare(ArrayList<Integer> sc) {
+            int spareValue = 0;
             
+            for (int i = 2; i<sc.size(); i++) {
+            	if ((sc.get(i-2)+sc.get(i-1))==10 && sc.get(i-1)!=10 && sc.get(i-2)!=10 && this.tours%2!=0) {
+            		spareValue += sc.get(i);
+            	}	
+            }
+            return spareValue;
         }
         
         /**
@@ -49,15 +58,14 @@ public class SinglePlayerGame {
          * ajoute le score des deux lancés le suivant
          * @param sc l'arrayList score
          */
-        public void strike(ArrayList<Integer> sc) {
-            int newValue = 0;  
-            
-            for (int i = 2; i<sc.size(); i++) {
-                if (sc.get(i-2)==10) {
-                    newValue = (sc.get(i) + (sc.get(i)-1));
-                    sc.set(i-2,newValue);
+        public int strike(ArrayList<Integer> sc) {
+            int strikeValue = 0;  
+            for (int i = 2; i<sc.size()-1; i++) {
+                if (sc.get(i-2)==10 ) {
+                    strikeValue += (sc.get(i) + (sc.get(i-1)));
                 }
             }
+            return strikeValue;
         }
         
         /**
@@ -68,14 +76,17 @@ public class SinglePlayerGame {
         public int total(ArrayList<Integer> sc) {
             int total = 0;
             
-            strike(score);
+            total += strike(score);// ajout des points bonus des strikes
+            total += spare(score);//ajout des points bonus des spares
             
-            for(int i=0; i<sc.size();i++) {
+            for(int i=0; i<sc.size();i++) { // ajout des points de "lancer"
                 total += sc.get(i);
             }
+            
             return total;
         }
-
+      
+       
 	/**
 	 * Cette méthode donne le score du joueur
 	 *
@@ -85,4 +96,5 @@ public class SinglePlayerGame {
             return total(this.score);
                
 	}
+        
 }
